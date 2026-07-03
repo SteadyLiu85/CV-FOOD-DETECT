@@ -1,0 +1,37 @@
+{
+  "mode": "depth",
+  "depth": "D:\\CV-FOOD-DETECT\\2026-4-3\\VolETA-MetaFood\\reports\\metric_depth_demo_bundle\\02_results\\depth_metric_mm.png",
+  "image": "D:\\CV-FOOD-DETECT\\2026-4-3\\VolETA-MetaFood\\work\\1\\images\\frame_0013_original.jpg",
+  "mask": "D:\\CV-FOOD-DETECT\\2026-4-3\\VolETA-MetaFood\\work\\1\\masks\\frame_0013_original_segmented_mask.jpg",
+  "intrinsics": "D:\\CV-FOOD-DETECT\\2026-4-3\\VolETA-MetaFood\\work\\1\\refined\\dense\\transforms.json",
+  "counts": {
+    "food_scaffold_points": 38196
+  },
+  "bbox_camera": {
+    "min": [
+      0.08183682149616728,
+      -0.1625612470256806,
+      0.9160000681877136
+    ],
+    "max": [
+      0.2742762488861394,
+      -0.012686503552345036,
+      1.0350000858306885
+    ],
+    "extent": [
+      0.1924394273899721,
+      0.14987474347333554,
+      0.11900001764297485
+    ]
+  },
+  "masked_depth_range": {
+    "min": 0.9160000681877136,
+    "max": 1.0350000858306885
+  },
+  "outputs": {
+    "overlay_projection": "D:\\CV-FOOD-DETECT\\2026-4-3\\VolETA-MetaFood\\reports\\metric_depth_demo_bundle\\02_results\\metric_scaffold\\overlay_projection.png",
+    "mask_used": "D:\\CV-FOOD-DETECT\\2026-4-3\\VolETA-MetaFood\\reports\\metric_depth_demo_bundle\\02_results\\metric_scaffold\\mask_used.png",
+    "masked_depth": "D:\\CV-FOOD-DETECT\\2026-4-3\\VolETA-MetaFood\\reports\\metric_depth_demo_bundle\\02_results\\metric_scaffold\\masked_depth.png",
+    "scaffold_ply": "D:\\CV-FOOD-DETECT\\2026-4-3\\VolETA-MetaFood\\reports\\metric_depth_demo_bundle\\02_results\\metric_scaffold\\scaffold_depth_points.ply"
+  }
+}

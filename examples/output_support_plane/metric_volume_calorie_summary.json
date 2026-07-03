@@ -1,0 +1,103 @@
+{
+  "mode": "support_plane",
+  "metric_summary": "reports\\metric_depth_demo_bundle\\02_results\\metric_scaffold\\summary.json",
+  "support_plane": {
+    "plane_normal": [
+      0.4659597608547353,
+      -0.06742257801920883,
+      -0.8822333575859858
+    ],
+    "plane_d": 0.786811039037497,
+    "plane_inlier_ratio": 0.5803736984738268,
+    "valid_pixel_count": 37973,
+    "height_stats_m": {
+      "min": 1.748421709635295e-05,
+      "max": 0.055952753871679306,
+      "mean": 0.03277982921438636
+    }
+  },
+  "mesh_metrics": {
+    "chosen_volume_m3": 0.0006798772006012647,
+    "chosen_volume_source": "support_plane_integration",
+    "bbox_extent_m": [
+      0.1924394273899721,
+      0.14987474347333554,
+      0.11900001764297485
+    ],
+    "vertex_count": 38196,
+    "face_count": 0,
+    "watertight": false,
+    "signed_volume_m3": 0.0,
+    "convex_hull_volume_m3": 0.0008574745972194177
+  },
+  "food": "strawberry",
+  "display_name": "Strawberry",
+  "prior": {
+    "display_name": "Strawberry",
+    "size_prior_cm": {
+      "mean": [
+        5.0,
+        4.4,
+        3.8
+      ],
+      "min": [
+        4.3,
+        3.7,
+        3.2
+      ],
+      "max": [
+        5.7,
+        5.0,
+        4.3
+      ]
+    },
+    "density_g_per_ml": {
+      "mean": 0.96,
+      "min": 0.9,
+      "max": 1.02
+    },
+    "kcal_per_100g": {
+      "mean": 32.0,
+      "min": 28.0,
+      "max": 36.0
+    },
+    "reference_volume_ml_range": [
+      31.0,
+      39.0
+    ],
+    "notes": "Single-item fallback prior for no-reference scale recovery."
+  },
+  "physical_estimation": {
+    "estimated_volume_ml": 679.8772006012647,
+    "estimated_mass_g": 652.6821125772141,
+    "estimated_kcal": 208.85827602470852,
+    "density_g_per_ml": 0.96,
+    "kcal_per_100g": 32.0
+  },
+  "ground_truth": {
+    "vertex_count": 137088,
+    "face_count": 261026,
+    "watertight": false,
+    "signed_volume_m3": 3.852949724549635e-05,
+    "convex_hull_volume_m3": 5.13481177277417e-05,
+    "chosen_volume_m3": 5.13481177277417e-05,
+    "chosen_volume_source": "convex_hull",
+    "bbox_extent_m": [
+      0.045546,
+      0.052908,
+      0.048265999999999996
+    ],
+    "chosen_volume_ml": 51.3481177277417,
+    "mesh_path": "ground_truth_scaled\\ground_truth_object_v2\\1.obj",
+    "volume_mape_percent": 1224.0547671213842
+  },
+  "outputs": {
+    "support_plane_overlay": "reports\\metric_supportplane_strawberry\\support_plane_overlay.png",
+    "height_map": "reports\\metric_supportplane_strawberry\\height_map.png",
+    "support_plane_points": "reports\\metric_supportplane_strawberry\\support_plane_points.ply"
+  },
+  "limitations": [
+    "This branch treats the visible food surface as a height field over a locally fitted support plane.",
+    "It is better suited to plate-supported foods than soups, mixed dishes, or objects with strong overhangs."
+  ]
+}

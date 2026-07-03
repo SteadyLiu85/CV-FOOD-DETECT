@@ -1,0 +1,79 @@
+{
+  "strawberry": {
+    "display_name": "Strawberry",
+    "size_prior_cm": {
+      "mean": [5.0, 4.4, 3.8],
+      "min": [4.3, 3.7, 3.2],
+      "max": [5.7, 5.0, 4.3]
+    },
+    "density_g_per_ml": {
+      "mean": 0.96,
+      "min": 0.90,
+      "max": 1.02
+    },
+    "kcal_per_100g": {
+      "mean": 32.0,
+      "min": 28.0,
+      "max": 36.0
+    },
+    "reference_volume_ml_range": [31.0, 39.0],
+    "notes": "Single-item fallback prior for no-reference scale recovery."
+  },
+  "tomato": {
+    "display_name": "Tomato",
+    "size_prior_cm": {
+      "mean": [6.5, 6.0, 5.7],
+      "min": [5.3, 5.0, 4.7],
+      "max": [7.5, 7.0, 6.7]
+    },
+    "density_g_per_ml": {
+      "mean": 0.95,
+      "min": 0.90,
+      "max": 1.02
+    },
+    "kcal_per_100g": {
+      "mean": 18.0,
+      "min": 15.0,
+      "max": 22.0
+    },
+    "notes": "Suitable for single whole tomato, not chopped tomato dishes."
+  },
+  "apple": {
+    "display_name": "Apple",
+    "size_prior_cm": {
+      "mean": [7.7, 7.2, 7.0],
+      "min": [6.4, 6.1, 5.9],
+      "max": [8.8, 8.2, 8.0]
+    },
+    "density_g_per_ml": {
+      "mean": 0.82,
+      "min": 0.75,
+      "max": 0.90
+    },
+    "kcal_per_100g": {
+      "mean": 52.0,
+      "min": 48.0,
+      "max": 56.0
+    },
+    "notes": "Suitable for a single whole apple."
+  },
+  "banana": {
+    "display_name": "Banana",
+    "size_prior_cm": {
+      "mean": [18.0, 3.9, 3.5],
+      "min": [15.0, 3.2, 2.9],
+      "max": [21.0, 4.5, 4.1]
+    },
+    "density_g_per_ml": {
+      "mean": 0.94,
+      "min": 0.88,
+      "max": 1.00
+    },
+    "kcal_per_100g": {
+      "mean": 89.0,
+      "min": 82.0,
+      "max": 96.0
+    },
+    "notes": "Single-item fallback prior."
+  }
+}

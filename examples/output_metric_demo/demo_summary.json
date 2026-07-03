@@ -1,0 +1,22 @@
+{
+  "model_dir": "D:\\models\\depth-anything-metric-small",
+  "image": "D:\\CV-FOOD-DETECT\\2026-4-3\\VolETA-MetaFood\\work\\1\\images\\frame_0013_original.jpg",
+  "mask": "D:\\CV-FOOD-DETECT\\2026-4-3\\VolETA-MetaFood\\work\\1\\masks\\frame_0013_original_segmented_mask.jpg",
+  "intrinsics": "D:\\CV-FOOD-DETECT\\2026-4-3\\VolETA-MetaFood\\work\\1\\refined\\dense\\transforms.json",
+  "raw_depth_stats_m": {
+    "min": 0.6908788681030273,
+    "max": 2.337449073791504,
+    "mean": 0.9231565594673157
+  },
+  "masked_depth_stats_m": {
+    "min": 0.9163410067558289,
+    "max": 1.0358232259750366,
+    "mean": 0.9462065100669861
+  },
+  "outputs": {
+    "process_dir": "D:\\CV-FOOD-DETECT\\2026-4-3\\VolETA-MetaFood\\reports\\metric_depth_demo_bundle\\01_process",
+    "results_dir": "D:\\CV-FOOD-DETECT\\2026-4-3\\VolETA-MetaFood\\reports\\metric_depth_demo_bundle\\02_results",
+    "depth_metric_mm_png": "D:\\CV-FOOD-DETECT\\2026-4-3\\VolETA-MetaFood\\reports\\metric_depth_demo_bundle\\02_results\\depth_metric_mm.png",
+    "metric_scaffold_summary": "D:\\CV-FOOD-DETECT\\2026-4-3\\VolETA-MetaFood\\reports\\metric_depth_demo_bundle\\02_results\\metric_scaffold\\summary.json"
+  }
+}

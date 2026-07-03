@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.DS_Store
+Thumbs.db
+models/*
+!models/README.md
+!models/depth_pro.pt
+runs/
+
+models/depth_pro.pt
