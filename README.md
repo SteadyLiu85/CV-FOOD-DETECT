@@ -4,7 +4,8 @@
 
 当前链路：
 
-- 输入：`RGB 图像 + 食物 mask + 相机内参`
+- 输入：`RGB 图像`
+- 可选补充：`food class / 手机型号 / 已有 mask / 已有相机内参`
 - 中间过程：`metric depth -> scaffold -> 支撑平面定尺 / 先验兜底`
 - 输出：`体积 + 千卡 + 摘要 json + 可视化结果`
 
@@ -17,7 +18,18 @@
   - 输出深度可视化、`depth_metric_mm.png` 和 scaffold 摘要
 
 - `scripts/run_depthpro_demo.py`
-  - 备用分支，用于接 Apple DepthPro
+  - Apple DepthPro 分支
+  - 支持直接读取已有 intrinsics，或通过手机型号 / EXIF / DepthPro 焦距预测自动回填 intrinsics
+
+- `scripts/infer_intrinsics_from_image.py`
+  - 从手机型号配置、图片 EXIF 或焦距兜底值推断 intrinsics
+
+- `scripts/run_grounded_sam_to_voleta.py`
+  - 文本提示词驱动的自动食物 mask 生成入口
+  - 依赖 GroundingDINO + MobileSAM 对应 vendor 与权重
+
+- `scripts/run_auto_food_volume_demo.py`
+  - 一键入口：自动 mask -> 自动 intrinsics -> DepthPro -> 体积估计
 
 - `scripts/build_noref_scaffold.py`
   - 从 metric depth 或已有场景点云构建 3D scaffold 点集
@@ -32,6 +44,9 @@
 
 - `assets/noref_food_priors.json`
   - 存放若干单体食物的尺寸、密度和热量先验
+
+- `assets/phone_camera_profiles.example.json`
+  - 手机型号到相机参数的示例映射表
 
 ### 示例输入
 
@@ -95,8 +110,8 @@ models/depth_pro.pt
 
 ### 2. Mask
 
-- 单通道二值 mask
-- 白色或非零区域表示食物区域
+- 可以直接提供单通道二值 mask
+- 也可以不提供，改由 `run_auto_food_volume_demo.py` 自动生成
 
 ### 3. 相机内参
 
@@ -113,7 +128,37 @@ JSON 至少应包含：
 }
 ```
 
+如果不直接提供 intrinsics，也可以：
+
+- 传手机型号并匹配 `assets/phone_camera_profiles.example.json`
+- 让脚本读取图片 EXIF
+- 最后使用 DepthPro 预测焦距兜底
+
 ## 推荐用法
+
+### 一键自动输入方案
+
+用户只给图片时，推荐直接走这一条：
+
+```powershell
+python scripts/run_auto_food_volume_demo.py `
+  --checkpoint models/depth_pro.pt `
+  --image examples/input/example_image.jpg `
+  --food strawberry `
+  --output-dir runs/example_auto_demo
+```
+
+如果你知道手机型号，也可以补充：
+
+```powershell
+python scripts/run_auto_food_volume_demo.py `
+  --checkpoint models/depth_pro.pt `
+  --image examples/input/example_image.jpg `
+  --food strawberry `
+  --phone-model "EXAMPLE PHONE MODEL" `
+  --phone-profiles assets/phone_camera_profiles.example.json `
+  --output-dir runs/example_auto_demo
+```
 
 ### metric-depth 部分
 
@@ -169,9 +214,10 @@ python scripts/estimate_noref_scale_calorie.py `
 ### 请求
 
 - `image`
-- `mask`
-- `food class`
-- `intrinsics`
+- 可选 `food class`
+- 可选 `phone model`
+- 可选 `mask`
+- 可选 `intrinsics`
 
 ### 返回
 
@@ -186,6 +232,7 @@ python scripts/estimate_noref_scale_calorie.py `
 miniapp_food_volume_bundle/
 ├─ assets/
 │  └─ noref_food_priors.json
+│  └─ phone_camera_profiles.example.json
 ├─ docs/
 │  └─ 交付说明.md
 ├─ examples/
@@ -201,7 +248,10 @@ miniapp_food_volume_bundle/
 │  ├─ build_noref_scaffold.py
 │  ├─ estimate_metric_volume_calorie.py
 │  ├─ estimate_noref_scale_calorie.py
+│  ├─ infer_intrinsics_from_image.py
+│  ├─ run_auto_food_volume_demo.py
 │  ├─ run_depthpro_demo.py
+│  ├─ run_grounded_sam_to_voleta.py
 │  └─ run_metric_depth_demo.py
 ├─ .gitignore
 ├─ README.md

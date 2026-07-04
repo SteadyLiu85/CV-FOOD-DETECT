@@ -11,6 +11,7 @@ from PIL import Image, ImageDraw
 
 import depth_pro
 from build_noref_scaffold import build_from_depth
+from infer_intrinsics_from_image import resolve_intrinsics_for_image
 
 
 def append_log(log_path: Path, lines) -> None:
@@ -59,7 +60,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--checkpoint", type=Path, required=True, help="Path to DepthPro checkpoint .pt file")
     parser.add_argument("--image", type=Path, required=True)
     parser.add_argument("--mask", type=Path, required=True)
-    parser.add_argument("--intrinsics", type=Path, required=True)
+    parser.add_argument("--intrinsics", type=Path, help="Optional intrinsics JSON. If omitted, try phone profile / EXIF / DepthPro focal fallback.")
+    parser.add_argument("--phone-model", type=str, help="Optional phone model string used to match a phone profile.")
+    parser.add_argument("--phone-profiles", type=Path, help="Optional JSON database keyed by phone model.")
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--mask-threshold", type=int, default=127)
     parser.add_argument("--log-file", type=Path, default=Path("reports/noref_integration_log_20260511.md"))
@@ -128,12 +131,27 @@ def main() -> None:
     depth_metric_png = res_dir / "depth_metric_mm.png"
     save_depth_png_meters(pred, depth_metric_png, scale=1000.0)
 
+    resolved_intrinsics_path = proc_dir / "resolved_intrinsics.json"
+    if args.intrinsics is not None:
+        intrinsics_path = args.intrinsics
+        intrinsics_source = "user_provided"
+    else:
+        intrinsics = resolve_intrinsics_for_image(
+            image_path=args.image,
+            output_path=resolved_intrinsics_path,
+            phone_model=args.phone_model,
+            profile_db=args.phone_profiles,
+            fallback_focal_px=focallength_px,
+        )
+        intrinsics_path = resolved_intrinsics_path
+        intrinsics_source = intrinsics["source"]
+
     scaffold_dir = res_dir / "metric_scaffold"
     scaffold_summary = build_from_depth(
         depth_path=depth_metric_png,
         image_path=args.image,
         mask_path=args.mask,
-        intrinsics_path=args.intrinsics,
+        intrinsics_path=intrinsics_path,
         output_dir=scaffold_dir,
         mask_threshold=args.mask_threshold,
         depth_scale=0.001,
@@ -146,7 +164,8 @@ def main() -> None:
         "checkpoint": str(args.checkpoint),
         "image": str(args.image),
         "mask": str(args.mask),
-        "intrinsics": str(args.intrinsics),
+        "intrinsics": str(intrinsics_path),
+        "intrinsics_source": intrinsics_source,
         "predicted_focallength_px": focallength_px,
         "raw_depth_stats_m": {
             "min": raw_min,
@@ -163,6 +182,7 @@ def main() -> None:
             "results_dir": str(res_dir),
             "depth_metric_mm_png": str(depth_metric_png),
             "metric_scaffold_summary": str(scaffold_summary_path),
+            "resolved_intrinsics": str(resolved_intrinsics_path) if resolved_intrinsics_path.exists() else None,
         },
     }
     (args.output_dir / "demo_summary.json").write_text(json.dumps(demo_summary, indent=2, ensure_ascii=False), encoding="utf-8")
@@ -172,6 +192,7 @@ def main() -> None:
         (
             f"- Built DepthPro metric-depth demo bundle at `{args.output_dir}`.",
             f"  - Predicted focal length: {focallength_px:.2f} px",
+            f"  - Intrinsics source: {intrinsics_source}",
             f"  - Raw depth range: {raw_min:.4f}m to {raw_max:.4f}m",
             f"  - Masked food depth range: {masked_min:.4f}m to {masked_max:.4f}m",
         ),
