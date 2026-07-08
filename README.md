@@ -14,7 +14,7 @@
 ### 脚本
 
 - `scripts/run_metric_depth_demo.py`
-  - 调用本地 Hugging Face 风格的 metric depth 模型目录，对单张图做深度预测
+  - 调用本地 metric depth 模型目录，对单张图做深度预测
   - 输出深度可视化、`depth_metric_mm.png` 和 scaffold 摘要
 
 - `scripts/run_depthpro_demo.py`
@@ -64,28 +64,18 @@
 
 ## 模型文件说明
 
-当前交付包已经内含一份可直接使用的 `DepthPro` 权重：
+当前脚本会优先尝试从以下位置自动加载：
 
-- `models/depth_pro.pt`
-
-同时还需要 `apple/ml-depth-pro` 的源码包。当前脚本会优先尝试从以下位置自动加载：
-
-- 与交付包同级的 `ml-depth-pro/src`
-- 交付包内部的 `vendor/ml-depth-pro/src`
+- 同级的 `ml-depth-pro/src`
+- 内部的 `vendor/ml-depth-pro/src`
 
 ### `run_metric_depth_demo.py` 所需
 
-需要一个本地 Hugging Face 风格的深度模型目录，能够兼容：
+需要一个本地深度模型目录，能够兼容：
 
 ```python
 AutoImageProcessor.from_pretrained(model_dir, local_files_only=True)
 AutoModelForDepthEstimation.from_pretrained(model_dir, local_files_only=True)
-```
-
-原实验日志中使用的模型目录是：
-
-```text
-D:\models\depth-anything-metric-small
 ```
 
 ### `run_depthpro_demo.py` 所需
@@ -141,13 +131,13 @@ JSON 至少应包含：
 
 - 传手机型号并匹配 `assets/phone_camera_profiles.example.json`
 - 让脚本读取图片 EXIF
-- 最后使用 DepthPro 预测焦距兜底
+- 最后使用 DepthPro 预测焦距
 
-## 推荐用法
+## 用法
 
-### 一键自动输入方案
+### 自动输入
 
-用户只给图片时，推荐直接走这一条：
+只给图片时，直接：
 
 ```powershell
 python scripts/run_auto_food_volume_demo.py `
@@ -157,7 +147,7 @@ python scripts/run_auto_food_volume_demo.py `
   --output-dir runs/example_auto_demo
 ```
 
-如果你知道手机型号，也可以补充：
+如果知道手机型号，也可以补充：
 
 ```powershell
 python scripts/run_auto_food_volume_demo.py `
