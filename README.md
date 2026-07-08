@@ -68,6 +68,11 @@
 
 - `models/depth_pro.pt`
 
+同时还需要 `apple/ml-depth-pro` 的源码包。当前脚本会优先尝试从以下位置自动加载：
+
+- 与交付包同级的 `ml-depth-pro/src`
+- 交付包内部的 `vendor/ml-depth-pro/src`
+
 ### `run_metric_depth_demo.py` 所需
 
 需要一个本地 Hugging Face 风格的深度模型目录，能够兼容：
@@ -100,6 +105,10 @@ models/depth_pro.pt
 - `scipy`
 - `opencv-python`
 - `torch`
+- `torchvision`
+- `timm`
+- `pillow_heif`
+- `matplotlib`
 - `transformers`
 
 ## 输入格式要求

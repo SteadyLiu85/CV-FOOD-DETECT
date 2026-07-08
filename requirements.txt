@@ -3,4 +3,8 @@ Pillow
 scipy
 opencv-python
 torch
+torchvision
+timm
+pillow_heif
+matplotlib
 transformers

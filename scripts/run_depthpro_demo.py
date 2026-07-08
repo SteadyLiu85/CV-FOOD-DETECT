@@ -1,6 +1,7 @@
 import argparse
 import json
 import shutil
+import sys
 from pathlib import Path
 from typing import Dict
 
@@ -8,6 +9,17 @@ import cv2
 import numpy as np
 import torch
 from PIL import Image, ImageDraw
+
+ROOT = Path(__file__).resolve().parents[1]
+DEPTH_PRO_SRC_CANDIDATES = [
+    ROOT.parent / "ml-depth-pro" / "src",
+    ROOT / "vendor" / "ml-depth-pro" / "src",
+]
+for candidate in DEPTH_PRO_SRC_CANDIDATES:
+    if candidate.exists():
+        candidate_str = str(candidate)
+        if candidate_str not in sys.path:
+            sys.path.insert(0, candidate_str)
 
 import depth_pro
 from build_noref_scaffold import build_from_depth
