@@ -1,0 +1,5 @@
+- Built DepthPro metric-depth demo bundle at `D:\.PROJECTS\CV-FOOD-DETECT\2026-7-03\miniapp_food_volume_bundle\runs\depthpro_smoke_test`.
+  - Predicted focal length: 2038.19 px
+  - Intrinsics source: user_provided
+  - Raw depth range: 1.1336m to 2.9272m
+  - Masked food depth range: 1.4449m to 1.6405m

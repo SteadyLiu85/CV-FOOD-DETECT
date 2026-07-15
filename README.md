@@ -2,8 +2,6 @@
 
 ## 目的
 
-当前链路：
-
 - 输入：`RGB 图像`
 - 可选补充：`food class / 手机型号 / 已有 mask / 已有相机内参`
 - 中间过程：`metric depth -> scaffold -> 支撑平面定尺 / 先验兜底`
@@ -208,6 +206,11 @@ python scripts/estimate_noref_scale_calorie.py `
 
 ## 小程序
 
+当前建议采用云端后端接口：小程序只上传图片和少量可选字段，模型推理放在服务器执行。详细边界见：
+
+- `docs/前后端边界与云端部署.md`
+- `backend/README.md`
+
 建议使用如下接口：
 
 ### 请求
@@ -224,6 +227,29 @@ python scripts/estimate_noref_scale_calorie.py `
 - `estimated_mass_g`
 - `estimated_kcal`
 - 可选调试图像 / json 
+
+### 云端 FastAPI 入口
+
+```powershell
+uvicorn backend.app:app --host 0.0.0.0 --port 8000
+```
+
+核心接口：
+
+```text
+POST /api/v1/food-volume
+```
+
+该接口内部调用 `scripts/run_auto_food_volume_demo.py`，输出与命令行链路保持一致。
+
+`pipeline_summary.json` 会记录分段耗时：
+
+```text
+auto_mask_seconds
+depthpro_seconds
+volume_seconds
+total_seconds
+```
 
 ## 目录结构
 

@@ -3,6 +3,7 @@ import json
 import os
 import subprocess
 import sys
+import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -71,6 +72,7 @@ def run_subprocess(cmd, cwd: Path) -> None:
 
 
 def main() -> None:
+    pipeline_started = time.perf_counter()
     args = parse_args()
     args.output_dir.mkdir(parents=True, exist_ok=True)
     inputs_dir = args.output_dir / "00_inputs"
@@ -79,9 +81,16 @@ def main() -> None:
     inputs_dir.mkdir(parents=True, exist_ok=True)
 
     mask_path = args.mask
+    timings = {
+        "auto_mask_seconds": 0.0,
+        "depthpro_seconds": 0.0,
+        "volume_seconds": 0.0,
+    }
     if mask_path is None:
         mask_path = inputs_dir / f"{args.image.stem}_auto_mask.png"
+        step_started = time.perf_counter()
         auto_segment_food(args.image, mask_path, args)
+        timings["auto_mask_seconds"] = time.perf_counter() - step_started
 
     depth_cmd = [
         sys.executable,
@@ -105,7 +114,9 @@ def main() -> None:
         depth_cmd.extend(["--phone-model", args.phone_model])
     if args.phone_profiles is not None:
         depth_cmd.extend(["--phone-profiles", str(args.phone_profiles)])
+    step_started = time.perf_counter()
     run_subprocess(depth_cmd, ROOT)
+    timings["depthpro_seconds"] = time.perf_counter() - step_started
 
     metric_summary = depth_dir / "02_results" / "metric_scaffold" / "summary.json"
 
@@ -125,8 +136,12 @@ def main() -> None:
             "--log-file",
             str(args.log_file),
         ]
+        step_started = time.perf_counter()
         run_subprocess(volume_cmd, ROOT)
+        timings["volume_seconds"] = time.perf_counter() - step_started
         volume_summary = volume_dir / "metric_volume_calorie_summary.json"
+
+    timings["total_seconds"] = time.perf_counter() - pipeline_started
 
     summary = {
         "image": str(args.image),
@@ -139,6 +154,7 @@ def main() -> None:
         "metric_summary": str(metric_summary),
         "volume_output_dir": str(volume_dir) if volume_summary else None,
         "volume_summary": str(volume_summary) if volume_summary else None,
+        "timings_seconds": timings,
     }
     (args.output_dir / "pipeline_summary.json").write_text(
         json.dumps(summary, indent=2, ensure_ascii=False),

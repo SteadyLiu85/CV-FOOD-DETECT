@@ -8,3 +8,6 @@ timm
 pillow_heif
 matplotlib
 transformers
+fastapi
+uvicorn
+python-multipart
