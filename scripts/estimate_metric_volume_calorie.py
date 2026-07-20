@@ -17,6 +17,9 @@ from build_noref_scaffold import (
 )
 
 
+ROOT = Path(__file__).resolve().parents[1]
+
+
 def append_log(log_path: Path, lines: Tuple[str, ...]) -> None:
     log_path.parent.mkdir(parents=True, exist_ok=True)
     with log_path.open("a", encoding="utf-8") as f:
@@ -28,8 +31,15 @@ def resolve_repo_relative(base_file: Path, maybe_relative: str) -> Path:
     p = Path(maybe_relative)
     if p.is_absolute():
         return p
-    repo_root = base_file.resolve().parents[2]
-    return (repo_root / p).resolve()
+    candidates = [
+        (ROOT / p).resolve(),
+        (base_file.parent / p).resolve(),
+        (Path.cwd() / p).resolve(),
+    ]
+    for candidate in candidates:
+        if candidate.exists():
+            return candidate
+    return candidates[0]
 
 
 def read_ascii_ply_mesh(path: Path) -> Tuple[np.ndarray, np.ndarray]:

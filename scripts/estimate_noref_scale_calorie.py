@@ -7,6 +7,9 @@ import numpy as np
 from scipy.spatial import ConvexHull
 
 
+ROOT = Path(__file__).resolve().parents[1]
+
+
 def load_json(path: Path) -> Dict:
     with path.open("r", encoding="utf-8") as f:
         return json.load(f)
@@ -16,8 +19,15 @@ def resolve_repo_relative(base_file: Path, maybe_relative: str) -> Path:
     p = Path(maybe_relative)
     if p.is_absolute():
         return p
-    repo_root = base_file.resolve().parents[2]
-    return (repo_root / p).resolve()
+    candidates = [
+        (ROOT / p).resolve(),
+        (base_file.parent / p).resolve(),
+        (Path.cwd() / p).resolve(),
+    ]
+    for candidate in candidates:
+        if candidate.exists():
+            return candidate
+    return candidates[0]
 
 
 def append_log(log_path: Path, lines: Tuple[str, ...]) -> None:

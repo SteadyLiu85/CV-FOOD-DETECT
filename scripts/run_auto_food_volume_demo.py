@@ -1,6 +1,5 @@
 import argparse
 import json
-import os
 import subprocess
 import sys
 import time
@@ -25,6 +24,10 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--min-side", type=int, default=480)
     parser.add_argument("--dino-threshold", type=float, default=0.35)
     parser.add_argument("--dino-nms-threshold", type=float, default=0.8)
+    parser.add_argument("--auto-mask-backend", choices=["auto", "grounded_sam", "hf_groundingdino", "opencv"], default="auto")
+    parser.add_argument("--hf-detector-model", type=str, default="IDEA-Research/grounding-dino-tiny")
+    parser.add_argument("--box-threshold", type=float, default=0.25)
+    parser.add_argument("--text-threshold", type=float, default=0.25)
     parser.add_argument("--mask-threshold", type=int, default=127)
     parser.add_argument("--volume-mode", choices=["support_plane", "scene_scale"], default="support_plane")
     parser.add_argument("--skip-volume", action="store_true")
@@ -33,37 +36,11 @@ def parse_args() -> argparse.Namespace:
 
 
 def auto_segment_food(image_path: Path, output_mask_path: Path, args: argparse.Namespace) -> Path:
-    import torch
-    from run_grounded_sam_to_voleta import (
-        build_config,
-        get_grounding_dino_model,
-        load_image_rgb,
-        save_binary_mask,
-        segment_with_text,
-    )
+    from auto_food_mask import generate_auto_mask
 
-    cfg = build_config(args)
-    prompts = [p.strip() for p in args.prompt.split(".") if p.strip()]
-    image_rgb = load_image_rgb(image_path)
-    device = "cuda" if torch.cuda.is_available() else "cpu"
-
-    old_cwd = Path.cwd()
-    try:
-        os.chdir(ROOT / "vendor" / "Tracking-Anything-with-DEVA-main")
-        gd_model, sam_model = get_grounding_dino_model(cfg, device)
-        mask, _segments_info = segment_with_text(
-            config=cfg,
-            gd_model=gd_model,
-            sam=sam_model,
-            image=image_rgb,
-            prompts=prompts,
-            min_side=args.min_side,
-        )
-    finally:
-        os.chdir(old_cwd)
-
-    mask_np = mask.detach().cpu().numpy()
-    save_binary_mask(mask_np, output_mask_path)
+    result = generate_auto_mask(image_path, output_mask_path, args)
+    metadata_path = output_mask_path.with_suffix(".metadata.json")
+    metadata_path.write_text(json.dumps(result, indent=2, ensure_ascii=False), encoding="utf-8")
     return output_mask_path
 
 
@@ -91,6 +68,14 @@ def main() -> None:
         step_started = time.perf_counter()
         auto_segment_food(args.image, mask_path, args)
         timings["auto_mask_seconds"] = time.perf_counter() - step_started
+        auto_mask_metadata_path = mask_path.with_suffix(".metadata.json")
+        auto_mask_info = json.loads(auto_mask_metadata_path.read_text(encoding="utf-8"))
+    else:
+        auto_mask_info = {
+            "backend": "user_provided",
+            "status": "ok",
+            "mask": str(mask_path),
+        }
 
     depth_cmd = [
         sys.executable,
@@ -146,6 +131,7 @@ def main() -> None:
     summary = {
         "image": str(args.image),
         "mask": str(mask_path),
+        "auto_mask": auto_mask_info,
         "intrinsics": str(args.intrinsics) if args.intrinsics else None,
         "phone_model": args.phone_model,
         "phone_profiles": str(args.phone_profiles) if args.phone_profiles else None,
