@@ -4,7 +4,7 @@
 
 - 输入：`RGB 图像`
 - 补充：`food class / 手机型号 / 调试用 mask / 调试用相机内参`
-- 中间过程：`metric depth -> scaffold -> 支撑平面定尺 / 先验兜底`
+- 中间过程：`metric depth -> scaffold -> 支撑平面定尺 / 先验`
 - 输出：`体积 + 千卡 + 摘要 json + 可视化结果`
 
 ## 包含内容
@@ -20,7 +20,7 @@
   - 支持直接读取已有 intrinsics，或通过手机型号 / EXIF / DepthPro 焦距预测自动回填 intrinsics
 
 - `scripts/infer_intrinsics_from_image.py`
-  - 从手机型号配置、图片 EXIF 或焦距兜底值推断 intrinsics
+  - 从手机型号配置、图片 EXIF 或焦距推断 intrinsics
 
 - `scripts/run_grounded_sam_to_voleta.py`
   - 文本提示词驱动的自动食物 mask 生成入口
@@ -29,8 +29,7 @@
 - `scripts/auto_food_mask.py`
   - 小程序链路使用的自动 mask 入口
   - 优先尝试 GroundingDINO + MobileSAM；也支持 HuggingFace GroundingDINO 找框 + GrabCut
-  - 若模型依赖或权重缺失，自动降级为 OpenCV 颜色阈值 + GrabCut 兜底
-  - 目标是保证用户端不需要手动上传 mask
+  - 若模型依赖或权重缺失，自动降级为 OpenCV 颜色阈值 + GrabCut
 
 - `scripts/run_auto_food_volume_demo.py`
   - 一键入口：自动 mask -> 自动 intrinsics -> DepthPro -> 体积估计
@@ -111,9 +110,8 @@ models/depth_pro.pt
 
 ### 2. Mask
 
-- 用户端不需要提供 mask。
-- 后端会通过 `run_auto_food_volume_demo.py` 自动生成 mask。
-- 调试阶段仍保留手动传入二值 mask 的能力，用于和自动分割结果做对照。
+- 后端会通过 `run_auto_food_volume_demo.py` 自动生成 mask
+- 调试阶段仍保留手动传入二值 mask 的能力，用于和自动分割结果做对照
 - 自动 mask 默认：
 
 ```text
@@ -257,7 +255,7 @@ uvicorn backend.app:app --host 0.0.0.0 --port 8000
 POST /api/v1/food-volume
 ```
 
-该接口内部调用 `scripts/run_auto_food_volume_demo.py`，输出与命令行保持一致。
+该接口内部调用 `scripts/run_auto_food_volume_demo.py`，输出与命令行保持一致
 
 `pipeline_summary.json` 会记录分段耗时：
 
@@ -303,7 +301,7 @@ consumed_mass_g    = before_mass_g - after_mass_g
 consumed_kcal      = before_kcal - after_kcal
 ```
 
-返回结果中 `before` 和 `after` 保留两次完整估计结果，`consumed` 给出实际摄入体积、质量、热量和进食比例。若饭后估计值异常大于饭前估计值，接口会把摄入量截断为 0，并在 `consumed.warnings` 中保留提示。
+返回结果中 `before` 和 `after` 保留两次完整估计结果，`consumed` 给出实际摄入体积、质量、热量和进食比例。若饭后估计值异常大于饭前估计值，接口会把摄入量截断为 0，并在 `consumed.warnings` 中保留提示
 
 ## 目录结构
 
